@@ -1,0 +1,168 @@
+:root {
+  --paper: #F7F6F1;
+  --white: #FFFFFF;
+  --ink: #16150F;
+  --muted: #8B897E;
+  --lines: #E7E5DC;
+  --ember: #FF5E3A;
+  --ember-soft: #FFE9E1;
+  --green: #37B24D;
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+#feed {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.card {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 24px;
+  gap: 20px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.phrase {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 8vw, 3.25rem);
+  line-height: 1.1;
+}
+
+.phonetic {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Top bar */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  z-index: 10;
+}
+.topbar-left { display: flex; gap: 8px; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--lines);
+  border-radius: 999px;
+  background: var(--white);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Translate button */
+.translate-btn {
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 10px 20px;
+  border: 1px solid var(--lines);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* Audio bar — Version A */
+.audio-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 10px 10px;
+  background: var(--white);
+  border: 1px solid var(--lines);
+  border-radius: 999px;
+}
+.play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--ember-soft);
+  color: var(--ember);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.contributor-name { font-weight: 600; font-size: 15px; }
+.contributor-country { font-size: 14px; color: var(--muted); }
+
+/* Translation reveal */
+.translation {
+  filter: blur(7px);
+  opacity: 0;
+  transition: filter 0.25s ease, opacity 0.25s ease;
+  pointer-events: none;
+}
+.translation.revealed {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* Press feedback */
+button { transition: transform 0.08s ease, opacity 0.08s ease; }
+button:active { transform: scale(0.96); opacity: 0.85; }
+
+/* Save button — its own round button, outside the bar */
+.save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--lines);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
