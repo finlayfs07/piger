@@ -149,7 +149,25 @@ body {
   opacity: 1;
 }
 
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.save-btn.shake { animation: shake 0.35s ease; }
+
 /* Press feedback */
+/* Saved state */
+.save-btn.saved {
+  background: var(--ember-soft);
+  border-color: var(--ember-soft);
+  color: var(--ember);
+}
+.save-btn.saved svg { fill: var(--ember); }
+
 button { transition: transform 0.08s ease, opacity 0.08s ease; }
 button:active { transform: scale(0.96); opacity: 0.85; }
 

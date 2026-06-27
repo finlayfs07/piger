@@ -1,7 +1,7 @@
 const feed = document.getElementById('feed');
 
 const cards = PHRASES.map((p) => `
-  <article class="card">
+  <article class="card" data-id="${p.id}">
     <p class="eyebrow">${p.category.toUpperCase()}</p>
     <h1 class="phrase" lang="fr">${p.french}</h1>
     <p class="phonetic">${p.phonetic}</p>
@@ -24,6 +24,40 @@ const cards = PHRASES.map((p) => `
 `);
 
 feed.innerHTML = cards.join('');
+
+const getSaved = () => JSON.parse(localStorage.getItem('piger_saved')) || [];
+const setSaved = (arr) => localStorage.setItem('piger_saved', JSON.stringify(arr));
+
+const savedCount = document.getElementById('saved-count');
+
+document.querySelectorAll('.save-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const id = btn.closest('.card').dataset.id;
+    let saved = getSaved();
+    if (saved.includes(id)) {
+      saved = saved.filter((s) => s !== id);
+      btn.classList.remove('saved');
+    } else {
+      if (saved.length >= 5) {
+        btn.classList.remove('shake');
+        void btn.offsetWidth;
+        btn.classList.add('shake');
+        return;
+      }
+      saved.push(id);
+      btn.classList.add('saved');
+    }
+    setSaved(saved);
+    savedCount.textContent = `${saved.length}/5`;
+  });
+});
+
+const initialSaved = getSaved();
+initialSaved.forEach((id) => {
+  const btn = document.querySelector(`.card[data-id="${id}"] .save-btn`);
+  if (btn) btn.classList.add('saved');
+});
+savedCount.textContent = `${initialSaved.length}/5`;
 
 document.querySelectorAll('.translate-btn').forEach((btn) => {
   const translation = btn.closest('.card').querySelector('.translation');
