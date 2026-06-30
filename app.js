@@ -1,5 +1,32 @@
 const feed = document.getElementById('feed');
 
+const REQUIRED_VIEWS = 3;
+
+function dayString(date) {
+  // returns "YYYY-MM-DD" in LOCAL time
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function updateStreak() {
+  const today = dayString(new Date());
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterday = dayString(yesterdayDate);
+  const lastActive = localStorage.getItem('piger_last_active');
+  let streak = parseInt(localStorage.getItem('piger_streak')) || 0;
+
+  if (lastActive === today) return; // already counted today, do nothing
+  else if (lastActive === yesterday) streak = streak + 1;
+  else streak = 1; // first time, or streak broken
+
+  localStorage.setItem('piger_streak', streak);
+  localStorage.setItem('piger_last_active', today);
+  document.getElementById('streak-count').textContent = streak;
+}
+
 const cards = PHRASES.map((p) => `
   <article class="card" data-id="${p.id}">
     <p class="eyebrow">${p.category.toUpperCase()}</p>
@@ -24,6 +51,9 @@ const cards = PHRASES.map((p) => `
 `);
 
 feed.innerHTML = cards.join('');
+
+document.getElementById('streak-count').textContent =
+  parseInt(localStorage.getItem('piger_streak')) || 0;
 
 const getSaved = () => JSON.parse(localStorage.getItem('piger_saved')) || [];
 const setSaved = (arr) => localStorage.setItem('piger_saved', JSON.stringify(arr));
@@ -71,3 +101,21 @@ document.querySelectorAll('.translate-btn').forEach((btn) => {
   btn.addEventListener('touchstart', (e) => { e.preventDefault(); reveal(); });
   btn.addEventListener('touchend', hide);
 });
+
+const viewedToday = new Set();
+let dayCounted = false;
+
+const viewObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const id = entry.target.dataset.id;
+      viewedToday.add(id);
+      if (viewedToday.size >= REQUIRED_VIEWS && !dayCounted) {
+        dayCounted = true;          // flip the latch so this block never runs again today
+        updateStreak();
+      }
+    }
+  });
+}, { threshold: 0.6 });
+
+document.querySelectorAll('.card').forEach((card) => viewObserver.observe(card));
