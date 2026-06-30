@@ -29,6 +29,16 @@
 
     <main id="feed"></main>
 
+    <div id="sheet-backdrop" class="sheet-backdrop"></div>
+    <aside id="saved-sheet" class="sheet" aria-hidden="true">
+      <div class="sheet-handle"></div>
+      <header class="sheet-header">
+        <h2 class="sheet-title">Saved</h2>
+        <button id="sheet-close" class="sheet-close" aria-label="Close saved list">&times;</button>
+      </header>
+      <div id="saved-list" class="sheet-list"></div>
+    </aside>
+
     <script src="phrases.js" defer></script>
     <script src="app.js" defer></script>
   </body>

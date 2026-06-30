@@ -60,6 +60,16 @@ const setSaved = (arr) => localStorage.setItem('piger_saved', JSON.stringify(arr
 
 const savedCount = document.getElementById('saved-count');
 
+function syncFeedHearts() {
+  const saved = getSaved();
+  document.querySelectorAll('#feed .save-btn').forEach((btn) => {
+    const id = btn.closest('.card').dataset.id;
+    if (saved.includes(id)) btn.classList.add('saved');
+    else btn.classList.remove('saved');
+  });
+  document.getElementById('saved-count').textContent = `${saved.length}/5`;
+}
+
 document.querySelectorAll('.save-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     const id = btn.closest('.card').dataset.id;
@@ -79,6 +89,7 @@ document.querySelectorAll('.save-btn').forEach((btn) => {
     }
     setSaved(saved);
     savedCount.textContent = `${saved.length}/5`;
+    syncFeedHearts();
   });
 });
 
@@ -119,3 +130,88 @@ const viewObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.6 });
 
 document.querySelectorAll('.card').forEach((card) => viewObserver.observe(card));
+
+const savedButton = document.getElementById('saved-button');
+const savedSheet = document.getElementById('saved-sheet');
+const sheetBackdrop = document.getElementById('sheet-backdrop');
+const sheetClose = document.getElementById('sheet-close');
+
+function renderSavedSheet() {
+  const list = document.getElementById('saved-list');
+  const saved = getSaved();
+
+  if (saved.length === 0) {
+    list.innerHTML = `<p class="saved-empty">No saved phrases yet. Tap the heart on a
+      phrase to save it.</p>`;
+    return;
+  }
+
+  const savedCards = saved
+    .map((id) => PHRASES.find((p) => p.id === id))
+    .filter((p) => p)
+    .map((p) => `
+      <article class="saved-card" data-id="${p.id}">
+        <div class="saved-card-top">
+          <p class="saved-phrase" lang="fr">${p.french}</p>
+          <button class="unsave-btn" aria-label="Remove from saved">&hearts;</button>
+        </div>
+        <p class="saved-phonetic">${p.phonetic}</p>
+        <button class="saved-translate-btn">Hold to translate</button>
+        <div class="saved-translation">
+          <p class="saved-english">${p.english}</p>
+          <p class="saved-usage">${p.usage_note}</p>
+        </div>
+        <div class="saved-audio-bar">
+          <button class="saved-play-btn" aria-label="Play audio">&#9654;</button>
+          <span class="saved-contributor">${p.contributor_name}</span>
+          <span class="saved-country">${p.contributor_country}</span>
+        </div>
+      </article>
+    `);
+
+  list.innerHTML = savedCards.join('');
+  wireSavedCardEvents();
+}
+
+function wireSavedCardEvents() {
+  document.querySelectorAll('#saved-list .saved-translate-btn').forEach((btn) => {
+    const translation = btn.closest('.saved-card').querySelector('.saved-translation');
+
+    const reveal = () => translation.classList.add('revealed');
+    const hide = () => translation.classList.remove('revealed');
+
+    btn.addEventListener('mousedown', reveal);
+    btn.addEventListener('mouseup', hide);
+    btn.addEventListener('mouseleave', hide);
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); reveal(); });
+    btn.addEventListener('touchend', hide);
+  });
+
+  document.querySelectorAll('#saved-list .unsave-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.closest('.saved-card').dataset.id;
+      let saved = getSaved();
+      saved = saved.filter((savedId) => savedId !== id);
+      setSaved(saved);
+      syncFeedHearts();
+      renderSavedSheet();
+    });
+  });
+}
+
+function openSheet() {
+  savedSheet.classList.add('open');
+  sheetBackdrop.classList.add('open');
+  savedSheet.setAttribute('aria-hidden', 'false');
+  renderSavedSheet();
+}
+
+function closeSheet() {
+  savedSheet.classList.remove('open');
+  sheetBackdrop.classList.remove('open');
+  savedSheet.setAttribute('aria-hidden', 'true');
+}
+
+savedButton.addEventListener('click', openSheet);
+sheetClose.addEventListener('click', closeSheet);
+sheetBackdrop.addEventListener('click', closeSheet);
