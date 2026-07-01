@@ -15,6 +15,12 @@ function updateStreak() {
   const yesterdayDate = new Date();
   yesterdayDate.setDate(yesterdayDate.getDate() - 1);
   const yesterday = dayString(yesterdayDate);
+  let activeDays = JSON.parse(localStorage.getItem('piger_active_days')) || [];
+  if (!activeDays.includes(today)) {
+    activeDays.push(today);
+    localStorage.setItem('piger_active_days', JSON.stringify(activeDays));
+  }
+
   const lastActive = localStorage.getItem('piger_last_active');
   let streak = parseInt(localStorage.getItem('piger_streak')) || 0;
 
@@ -215,3 +221,84 @@ function closeSheet() {
 savedButton.addEventListener('click', openSheet);
 sheetClose.addEventListener('click', closeSheet);
 sheetBackdrop.addEventListener('click', closeSheet);
+
+const calendarSheet = document.getElementById('calendar-sheet');
+const calendarBackdrop = document.getElementById('calendar-backdrop');
+const calendarClose = document.getElementById('calendar-close');
+const streakButton = document.getElementById('streak-button');
+
+const monthNames = ['January','February','March','April','May','June','July',
+  'August','September','October','November','December'];
+
+let viewYear, viewMonth;
+
+function renderCalendar() {
+  const grid = document.getElementById('calendar-grid');
+  const activeDays = JSON.parse(localStorage.getItem('piger_active_days')) || [];
+  const todayStr = dayString(new Date());
+
+  document.getElementById('calendar-month-label').textContent =
+    `${monthNames[viewMonth]} ${viewYear}`;
+
+  const firstWeekday = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  const cells = [];
+  for (let i = 0; i < firstWeekday; i++) {
+    cells.push('<div class="cal-cell cal-blank"></div>');
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cellDate = dayString(new Date(viewYear, viewMonth, d));
+    const isActive = activeDays.includes(cellDate);
+    const isToday = cellDate === todayStr;
+    const classes = 'cal-cell' + (isActive ? ' active' : '') + (isToday ? ' today' : '');
+    cells.push(`<div class="${classes}">${d}</div>`);
+  }
+  grid.innerHTML = cells.join('');
+
+  document.getElementById('calendar-streak-count').textContent =
+    (parseInt(localStorage.getItem('piger_streak')) || 0) + ' day streak';
+
+  const real = new Date();
+  const realIdx = real.getFullYear() * 12 + real.getMonth();
+  const viewIdx = viewYear * 12 + viewMonth;
+  let earliestIdx = realIdx;
+  if (activeDays.length) {
+    const earliest = activeDays.slice().sort()[0];
+    earliestIdx = parseInt(earliest.slice(0, 4)) * 12 + (parseInt(earliest.slice(5, 7)) - 1);
+  }
+  document.getElementById('cal-next').disabled = (viewIdx >= realIdx);
+  document.getElementById('cal-prev').disabled = (viewIdx <= earliestIdx);
+}
+
+function openCalendar() {
+  calendarSheet.classList.add('open');
+  calendarBackdrop.classList.add('open');
+  calendarSheet.setAttribute('aria-hidden', 'false');
+  const n = new Date();
+  viewYear = n.getFullYear();
+  viewMonth = n.getMonth();
+  renderCalendar();
+}
+
+function closeCalendar() {
+  calendarSheet.classList.remove('open');
+  calendarBackdrop.classList.remove('open');
+  calendarSheet.setAttribute('aria-hidden', 'true');
+}
+
+streakButton.addEventListener('click', openCalendar);
+calendarClose.addEventListener('click', closeCalendar);
+calendarBackdrop.addEventListener('click', closeCalendar);
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  viewMonth -= 1;
+  if (viewMonth < 0) { viewMonth = 11; viewYear -= 1; }
+  renderCalendar();
+});
+
+document.getElementById('cal-next').addEventListener('click', () => {
+  viewMonth += 1;
+  if (viewMonth > 11) { viewMonth = 0; viewYear += 1; }
+  renderCalendar();
+});

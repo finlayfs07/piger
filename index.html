@@ -39,6 +39,28 @@
       <div id="saved-list" class="sheet-list"></div>
     </aside>
 
+    <div id="calendar-backdrop" class="sheet-backdrop"></div>
+    <aside id="calendar-sheet" class="sheet" aria-hidden="true">
+      <div class="sheet-handle"></div>
+      <header class="sheet-header">
+        <h2 class="sheet-title">Streak</h2>
+        <button id="calendar-close" class="sheet-close" aria-label="Close streak calendar">&times;</button>
+      </header>
+      <div class="streak-stat">
+        <span class="streak-fire">🔥</span>
+        <span id="calendar-streak-count">0 day streak</span>
+      </div>
+      <div class="cal-nav">
+        <button id="cal-prev" class="cal-nav-btn" aria-label="Previous month">&lsaquo;</button>
+        <span id="calendar-month-label" class="cal-month-label"></span>
+        <button id="cal-next" class="cal-nav-btn" aria-label="Next month">&rsaquo;</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+      </div>
+      <div id="calendar-grid" class="cal-grid"></div>
+    </aside>
+
     <script src="phrases.js" defer></script>
     <script src="app.js" defer></script>
   </body>
