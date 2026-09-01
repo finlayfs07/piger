@@ -23,21 +23,51 @@
 }
 
 body {
-  background: var(--paper);
+  background: #E7E5DC;
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.app-frame {
+  aspect-ratio: 9 / 16;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: auto;
+  background: var(--paper);
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 540px) {
+  .app-frame {
+    aspect-ratio: auto;
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
 }
 
 #feed {
-  height: 100dvh;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* old Edge */
 }
+#feed::-webkit-scrollbar { display: none; }
 
 .card {
-  height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,6 +91,11 @@ body {
   font-weight: 600;
   font-size: clamp(2rem, 8vw, 3.25rem);
   line-height: 1.1;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.card:has(.translation.revealed) .phrase {
+  transform: scale(0.68);
+  opacity: 0.35;
 }
 
 .phonetic {
@@ -69,10 +104,38 @@ body {
   color: var(--muted);
 }
 
+/* Usage example block */
+.example {
+  background: var(--white);
+  border: 1px solid var(--lines);
+  border-radius: 12px;
+  padding: 12px 13px;
+  margin-top: 18px;
+  text-align: left;
+}
+.example-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  margin: 0 0 7px;
+}
+.example-fr {
+  font-size: 13px;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.4;
+}
+.example-en {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 5px 0 0;
+  line-height: 1.4;
+}
+
 /* Top bar */
 .topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 12px;

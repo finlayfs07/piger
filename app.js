@@ -42,6 +42,11 @@ const cards = PHRASES.map((p) => `
     <div class="translation">
       <p class="english">${p.english}</p>
       <p class="usage-note">${p.usage_note}</p>
+      <div class="example">
+        <p class="example-label">IN USE</p>
+        <p class="example-fr" lang="fr">${p.example_fr}</p>
+        <p class="example-en">${p.example_en}</p>
+      </div>
     </div>
     <div class="audio-bar">
       <button class="play-btn" aria-label="Play audio">
